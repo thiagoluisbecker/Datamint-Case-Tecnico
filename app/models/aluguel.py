@@ -4,6 +4,7 @@ from datetime import datetime
 
 class Aluguel(db.Model):
     __tablename__ = 'alugueis'
+
     id = db.Column(db.Integer, primary_key=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     filme_id = db.Column(db.Integer, db.ForeignKey('filmes.id'), nullable=False)
