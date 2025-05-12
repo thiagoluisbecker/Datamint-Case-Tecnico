@@ -1,14 +1,13 @@
 from app import db
-
+from datetime import datetime
 
 
 class Aluguel(db.Model):
-    
+    __tablename__ = 'alugueis'
     id = db.Column(db.Integer, primary_key=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     filme_id = db.Column(db.Integer, db.ForeignKey('filmes.id'), nullable=False)
-    data_locacao = db.Column(db.DateTime(timezone=True),
-                           server_default=func.now())
+    data_locacao = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
     nota = db.Column(db.Float)
 
     usuario = db.relationship('Usuario', back_populates='alugueis')
