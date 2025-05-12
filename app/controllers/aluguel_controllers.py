@@ -40,8 +40,21 @@ def avaliar_filme(aluguel_id):
 
     return jsonify({'mensagem': f'Nota {nota} registrada para o aluguel {aluguel.id}'})
 
-@aluguel_bp.route('/<int:usuario_id>/alugueis', methods=['GET'])
-def alugueis_usuario(usuario_id):
-    
 
-    return jsonify()
+@aluguel_bp.route('/<int:usuario_id>/alugueis', methods=['GET'])
+def lista_alugueis_usuario(usuario_id):
+    usuario = Usuario.query.get_or_404(usuario_id)
+    alugueis_usuario = Aluguel.query.filter_by(usuario_id = usuario.id).all()
+
+    lista_alugueis_usuario = []
+    for aluguel in alugueis_usuario:
+        dados_aluguel = {
+            'filme_id':aluguel.filme.id,
+            'filme_nome':aluguel.filme.nome,
+            'nota':aluguel.nota,
+            'data_locacao':aluguel.data_locacao,
+        }
+        lista_alugueis_usuario.append(dados_aluguel)
+
+
+    return jsonify(lista_alugueis_usuario)
