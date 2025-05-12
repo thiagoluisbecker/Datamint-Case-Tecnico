@@ -29,5 +29,10 @@ def create_app(test_config=None):
     migrate.init_app(app, db)
 
     from app.models import filme, usuario, aluguel
-
+    from app.controllers.filme_controllers import filme_bp
+    from app.controllers.usuario_controllers import usuario_bp
+    app.register_blueprint(filme_bp, url_prefix='/filmes')
+    app.register_blueprint(usuario_bp, url_prefix='/usuario')
+    
+    
     return app
