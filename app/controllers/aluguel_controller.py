@@ -9,6 +9,27 @@ aluguel_bp = Blueprint('aluguel', __name__)
 
 @aluguel_bp.route('/', methods=['POST'])
 def alugar_filme():
+    """
+    Aluga um filme
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          properties:
+            usuario_id:
+              type: integer
+              description: ID do usuário
+            filme_id:
+              type: integer
+              description: ID do filme
+    responses:
+      201:
+        description: Filme alugado com sucesso
+      400:
+        description: Dados inválidos
+    """
     dados = request.get_json()
     usuario_id = dados.get('usuario_id')
     filme_id = dados.get('filme_id')
@@ -23,11 +44,37 @@ def alugar_filme():
     db.session.add(aluguel)
     db.session.commit()
 
-    return jsonify({'mensagem':'Filme alugado com sucesso', 'alguel_id':aluguel.id}), 200
+    return jsonify({'mensagem':'Filme alugado com sucesso', 'alguel_id':aluguel.id}), 201
 
 
 @aluguel_bp.route('/<int:aluguel_id>/avaliar', methods=['POST'])
 def avaliar_filme(aluguel_id):
+    """
+    Avalia filme alugado
+    ---
+    parameters:
+      - name: aluguel_id
+        in: path
+        type: integer
+        required: true
+        description: ID do aluguel
+      - name: body
+        in: body
+        required: true
+        schema:
+          properties:
+            nota:
+              type: number
+              format: float
+              description: Nota de 0 a 10
+    responses:
+      200:
+        description: Nota registrada
+      400:
+        description: Nota inválida
+      404:
+        description: Aluguel não encontrado
+    """
     dados = request.get_json()
     nota = dados.get('nota')
 
@@ -38,11 +85,26 @@ def avaliar_filme(aluguel_id):
     aluguel.nota = nota
     db.session.commit()
 
-    return jsonify({'mensagem': f'Nota {nota} registrada para o aluguel {aluguel.id}'})
+    return jsonify({'mensagem': f'Nota {nota} registrada para o aluguel {aluguel.id}'}), 200 
 
 
 @aluguel_bp.route('/<int:usuario_id>/alugueis', methods=['GET'])
 def lista_alugueis_usuario(usuario_id):
+    """
+    Listar todos os filmes alugados de um usuário
+    ---
+    parameters:
+      - name: usuario_id
+        in: path
+        type: integer
+        required: true
+        description: ID do usuário
+    responses:
+      200:
+        description: Lista de alugueis
+      404:
+        description: Usuário não encontrado
+    """
     usuario = Usuario.query.get_or_404(usuario_id)
     alugueis_usuario = Aluguel.query.filter_by(usuario_id = usuario.id).all()
 

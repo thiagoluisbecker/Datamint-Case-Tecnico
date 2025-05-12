@@ -27,6 +27,22 @@ def get_filmes():
 
 @filme_bp.route('/<int:filme_id>', methods=['GET'])
 def get_filme_por_id(filme_id):
+    """
+    Lista todas as informações sobre um determinado filme
+    ---
+    parameters:
+      - name: filme_id
+        in: path
+        type: integer
+        required: true
+        description: ID do filme
+    responses:
+      200:
+        description: Detalhes do filme encontrado
+      404:
+        description: Filme não encontrado
+    """
+
     filme = Filme.query.get_or_404(filme_id)
     if not filme:
         return jsonify({'mensagem': f'Nenhum filme encontrado com o id {filme_id}'}), 404
@@ -46,6 +62,21 @@ def get_filme_por_id(filme_id):
 
 @filme_bp.route('/genero/<genero>', methods=['GET'])
 def get_filmes_por_genero(genero):
+    """
+    Lista filmes por gênero
+    ---
+    parameters:
+      - name: genero
+        in: path
+        type: string
+        required: true
+        description: Gênero do filme
+    responses:
+      200:
+        description: Lista de filmes encontrados
+      404:
+        description: Nenhum filme encontrado
+    """
     filmes = Filme.query.filter_by(genero=genero).all()
     if not filmes:
         return jsonify({'mensagem': f'Nenhum filme encontrado no gênero: {genero}'}), 404

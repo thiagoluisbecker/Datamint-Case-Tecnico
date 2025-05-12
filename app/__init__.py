@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flasgger import Swagger
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -28,9 +29,11 @@ def create_app(test_config=None):
     db.init_app(app)
     migrate.init_app(app, db)
 
+    Swagger(app)
+
     from app.models import filme, usuario, aluguel
-    from app.controllers.filme_controllers import filme_bp
-    from app.controllers.aluguel_controllers import aluguel_bp
+    from app.controllers.filme_controller import filme_bp
+    from app.controllers.aluguel_controller import aluguel_bp
     app.register_blueprint(filme_bp, url_prefix='/filmes')
     app.register_blueprint(aluguel_bp, url_prefix='/usuario')
     
