@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request, abort
 from app.repositories.aluguel_repository import AluguelRepository
-from app.models.usuario import Usuario
+from app.repositories.usuario_repository import UsuarioRepository
 from app.repositories.filme_repository import FilmeRepository
 from app.models.aluguel import Aluguel
 from app import db
@@ -38,7 +38,7 @@ def alugar_filme():
     if not usuario_id or not filme_id:
         abort(400, description="É necessário informar usuario_id e filme_id")
     
-    usuario = Usuario.query.get_or_404(usuario_id)
+    usuario = UsuarioRepository.buscar_por_id(usuario_id)
     filme = FilmeRepository.buscar_por_id(filme_id)
 
     aluguel = Aluguel(usuario= usuario, filme = filme)
@@ -107,7 +107,7 @@ def lista_alugueis_usuario(usuario_id):
         description: Usuário não encontrado
     """
     
-    usuario = Usuario.query.get_or_404(usuario_id)
+    usuario = UsuarioRepository.buscar_por_id(usuario_id)
     alugueis_usuario = AluguelRepository.listar_por_usuario(usuario_id=usuario.id)
 
     lista_alugueis_usuario = []
