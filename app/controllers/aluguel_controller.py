@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request, abort
 from app.repositories.aluguel_repository import AluguelRepository
 from app.repositories.usuario_repository import UsuarioRepository
 from app.repositories.filme_repository import FilmeRepository
+from app.factories.aluguel_factory import AluguelFactory
 from app.models.aluguel import Aluguel
 from app import db
 
@@ -41,7 +42,7 @@ def alugar_filme():
     usuario = UsuarioRepository.buscar_por_id(usuario_id)
     filme = FilmeRepository.buscar_por_id(filme_id)
 
-    aluguel = Aluguel(usuario= usuario, filme = filme)
+    aluguel = AluguelFactory.criar_aluguel(usuario= usuario, filme = filme)
     db.session.add(aluguel)
     db.session.commit()
 
