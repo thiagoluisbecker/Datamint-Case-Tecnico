@@ -3,7 +3,6 @@ from app.models.aluguel import Aluguel
 from app.models.usuario import Usuario
 from app.models.filme import Filme
 from app import db
-from datetime import datetime
 
 aluguel_bp = Blueprint('aluguel', __name__)
 
@@ -40,7 +39,7 @@ def alugar_filme():
     usuario = Usuario.query.get_or_404(usuario_id)
     filme = Filme.query.get_or_404(filme_id)
 
-    aluguel = Aluguel(usuario= usuario.id, filme = filme.id)
+    aluguel = Aluguel(usuario= usuario, filme = filme)
     db.session.add(aluguel)
     db.session.commit()
 
@@ -78,7 +77,7 @@ def avaliar_filme(aluguel_id):
     dados = request.get_json()
     nota = dados.get('nota')
 
-    if not nota or nota>10 and nota<0:
+    if not nota or nota>10 or nota<0:
         abort(400, description="Nota inválida, ela deve ser de 0 a 10")
 
     aluguel = Aluguel.query.get_or_404(aluguel_id)
