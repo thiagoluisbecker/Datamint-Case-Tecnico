@@ -42,7 +42,7 @@ def alugar_filme():
     usuario = UsuarioRepository.buscar_por_id(usuario_id)
     filme = FilmeRepository.buscar_por_id(filme_id)
 
-    aluguel = AluguelFactory.criar_aluguel(usuario= usuario, filme = filme)
+    aluguel = AluguelFactory.criar_aluguel(usuario_id= usuario.id, filme_id = filme.id)
     db.session.add(aluguel)
     db.session.commit()
 
