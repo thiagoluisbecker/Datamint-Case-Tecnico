@@ -31,7 +31,7 @@ def create_app(test_config=None):
 
     Swagger(app)
 
-    from app.models import filme, usuario, aluguel
+    from app.models import filme, usuario, aluguel, genero
     from app.controllers.filme_controller import filme_bp
     from app.controllers.aluguel_controller import aluguel_bp
     app.register_blueprint(filme_bp, url_prefix='/filmes')

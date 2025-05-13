@@ -12,8 +12,8 @@ class FilmeRepository:
         return Filme.query.get_or_404(filme_id)
     
     @staticmethod
-    def listar_por_genero(genero):
-        return Filme.query.filter_by(genero=genero).all()
+    def listar_por_genero_id(genero_id):
+        return Filme.query.filter_by(genero_id=genero_id).all()
 
     @staticmethod
     def limpar_todos():
