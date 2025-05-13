@@ -35,7 +35,7 @@ def create_app(test_config=None):
     from app.controllers.filme_controller import filme_bp
     from app.controllers.aluguel_controller import aluguel_bp
     app.register_blueprint(filme_bp, url_prefix='/filmes')
-    app.register_blueprint(aluguel_bp, url_prefix='/usuario')
+    app.register_blueprint(aluguel_bp, url_prefix='/alugueis')
     
     
     return app
