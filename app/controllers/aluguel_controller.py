@@ -87,7 +87,7 @@ def avaliar_filme(aluguel_id):
     return jsonify({'mensagem': f'Nota {nota} registrada para o aluguel {aluguel.id}'}), 200 
 
 
-@aluguel_bp.route('/<int:usuario_id>/alugueis', methods=['GET'])
+@aluguel_bp.route('usuario/<int:usuario_id>/', methods=['GET'])
 def lista_alugueis_usuario(usuario_id):
     """
     Listar todos os filmes alugados de um usuário
