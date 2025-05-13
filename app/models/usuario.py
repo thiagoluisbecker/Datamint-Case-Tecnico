@@ -5,7 +5,7 @@ class Usuario(db.Model):
 
     id = db.Column(db.Integer, primary_key = True)
     nome = db.Column(db.String(100), nullable = False)
-    celular = db.Column(db.String(15))
+    celular = db.Column(db.String(20))
     email = db.Column(db.String(100), nullable = False, unique = True) 
     
     alugueis = db.relationship('Aluguel', back_populates='usuario')

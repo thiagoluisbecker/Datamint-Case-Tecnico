@@ -2,6 +2,7 @@ alembic==1.15.2
 attrs==25.3.0
 blinker==1.9.0
 click==8.2.0
+Faker==37.1.0
 flasgger==0.9.7.1
 Flask==3.1.0
 Flask-Migrate==4.1.0
@@ -25,4 +26,5 @@ rpds-py==0.24.0
 six==1.17.0
 SQLAlchemy==2.0.40
 typing_extensions==4.13.2
+tzdata==2025.2
 Werkzeug==3.1.3

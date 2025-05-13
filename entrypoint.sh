@@ -1,4 +1,7 @@
 #!/bin/bash
+echo ">> Aguardando banco ficar pronto..."
+sleep 5
+
 echo ">> Aplicando migracae..."
 flask db upgrade
 
