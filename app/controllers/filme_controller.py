@@ -1,12 +1,13 @@
 from flask import Blueprint, jsonify
 from app.models.filme import Filme
+from app.repositories.filme_repository import FilmeRepository
 from app import db
 
 filme_bp = Blueprint('filme', __name__)
 
 @filme_bp.route('/', methods=['GET'])
 def get_filmes():
-    filmes = Filme.query.all()
+    filmes = FilmeRepository.listar_todos()
     if not filmes:
         return jsonify({'mensagem': f'Nenhum filme encontrado'}), 404
     
@@ -43,7 +44,7 @@ def get_filme_por_id(filme_id):
         description: Filme não encontrado
     """
 
-    filme = Filme.query.get_or_404(filme_id)
+    filme = FilmeRepository.buscar_por_id(filme_id)
     if not filme:
         return jsonify({'mensagem': f'Nenhum filme encontrado com o id {filme_id}'}), 404
     
@@ -77,7 +78,7 @@ def get_filmes_por_genero(genero):
       404:
         description: Nenhum filme encontrado
     """
-    filmes = Filme.query.filter_by(genero=genero).all()
+    filmes = FilmeRepository.listar_por_genero(genero)
     if not filmes:
         return jsonify({'mensagem': f'Nenhum filme encontrado no gênero: {genero}'}), 404
 
