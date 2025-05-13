@@ -49,3 +49,15 @@ def test_avaliar_filme_com_nota_invalida(client, app):
     assert response.status_code == 400
 
 
+def test_listar_alugueis_do_usuario(client, app):
+    with app.app_context():
+        usuario = Usuario(nome='Thiago', email='thiago@teste.com')
+        filme = Filme(nome='Matrix', genero='Ação', ano=1999)
+        db.session.add_all([usuario, filme])
+        db.session.commit()
+
+        client.post('/alugueis/', json={'usuario_id': 1, 'filme_id': 1})
+
+    response = client.get('/alugueis/usuario/1/')
+    assert response.status_code == 200
+    assert b'Matrix' in response.data
