@@ -10,6 +10,9 @@ class Filme(db.Model):
     sinopse = db.Column(db.Text)
     diretor = db.Column(db.String(100))
     
+    nota_final = db.Column(db.Float, default=0)
+    total_avaliacoes = db.Column(db.Integer, default=0)
+
     genero = db.relationship('Genero', back_populates='filmes')
     alugueis = db.relationship('Aluguel', back_populates='filme')
 
