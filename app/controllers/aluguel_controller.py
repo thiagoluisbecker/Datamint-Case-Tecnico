@@ -1,8 +1,10 @@
 from flask import Blueprint, jsonify, request, abort
-from app.models.aluguel import Aluguel
+from app.repositories.aluguel_repository import AluguelRepository
 from app.models.usuario import Usuario
-from app.models.filme import Filme
+from app.repositories.filme_repository import FilmeRepository
+from app.models.aluguel import Aluguel
 from app import db
+
 
 aluguel_bp = Blueprint('aluguel', __name__)
 
@@ -37,7 +39,7 @@ def alugar_filme():
         abort(400, description="É necessário informar usuario_id e filme_id")
     
     usuario = Usuario.query.get_or_404(usuario_id)
-    filme = Filme.query.get_or_404(filme_id)
+    filme = FilmeRepository.buscar_por_id(filme_id)
 
     aluguel = Aluguel(usuario= usuario, filme = filme)
     db.session.add(aluguel)
@@ -80,7 +82,7 @@ def avaliar_filme(aluguel_id):
     if not nota or nota>10 or nota<0:
         abort(400, description="Nota inválida, ela deve ser de 0 a 10")
 
-    aluguel = Aluguel.query.get_or_404(aluguel_id)
+    aluguel = AluguelRepository.buscar_por_id(aluguel_id=aluguel_id)
     aluguel.nota = nota
     db.session.commit()
 
@@ -104,8 +106,9 @@ def lista_alugueis_usuario(usuario_id):
       404:
         description: Usuário não encontrado
     """
+    
     usuario = Usuario.query.get_or_404(usuario_id)
-    alugueis_usuario = Aluguel.query.filter_by(usuario_id = usuario.id).all()
+    alugueis_usuario = AluguelRepository.listar_por_usuario(usuario_id=usuario.id)
 
     lista_alugueis_usuario = []
     for aluguel in alugueis_usuario:

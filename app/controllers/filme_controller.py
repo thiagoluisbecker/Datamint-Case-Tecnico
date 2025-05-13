@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify
-from app.models.filme import Filme
 from app.repositories.filme_repository import FilmeRepository
 from app import db
 
