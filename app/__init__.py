@@ -11,10 +11,10 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
     app.config.from_mapping(
-        SECRET_KEY='dev',
-        SQLALCHEMY_DATABASE_URI='postgresql://filmes_user:postgres@localhost:5432/filmes_api',
-        SQLALCHEMY_TRACK_MODIFICATIONS=False,
-    )
+    SECRET_KEY='dev',
+    SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI', 'sqlite:///default.db'),
+    SQLALCHEMY_TRACK_MODIFICATIONS=False,
+)
 
     if test_config:
         app.config.from_mapping(test_config)
