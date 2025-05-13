@@ -1,4 +1,5 @@
 from app.models.usuario import Usuario
+from app import db
 
 class UsuarioRepository:
     
@@ -9,3 +10,9 @@ class UsuarioRepository:
     @staticmethod
     def buscar_por_id(usuario_id):
         return Usuario.query.get(usuario_id)
+    
+    @staticmethod
+    def limpar_todos():
+        Usuario.query.delete()
+        db.session.commit()
+        

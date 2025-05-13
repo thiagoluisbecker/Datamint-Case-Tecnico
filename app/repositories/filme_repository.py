@@ -15,3 +15,9 @@ class FilmeRepository:
     def listar_por_genero(genero):
         return Filme.query.filter_by(genero=genero).all()
 
+    @staticmethod
+    def limpar_todos():
+        Filme.query.delete()
+        db.session.commit()
+
+        
