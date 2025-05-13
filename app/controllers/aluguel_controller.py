@@ -80,14 +80,25 @@ def avaliar_filme(aluguel_id):
     dados = request.get_json()
     nota = dados.get('nota')
 
-    if not nota or nota>10 or nota<0:
-        abort(400, description="Nota inválida, ela deve ser de 0 a 10")
+    if nota is None or nota < 0 or nota > 10:
+        abort(400, description="Nota inválida. Deve ser entre 0 e 10.")
 
-    aluguel = AluguelRepository.buscar_por_id(aluguel_id=aluguel_id)
+    aluguel = AluguelRepository.buscar_por_id(aluguel_id)
+    if not aluguel:
+        abort(404, description="Aluguel não encontrado.")
+
+    if aluguel.nota is not None:
+        abort(400, description="Esse aluguel já foi avaliado.")
+
     aluguel.nota = nota
+
+    filme = aluguel.filme
+    filme.total_avaliacoes += 1
+    filme.nota_final = ((filme.nota_final * (filme.total_avaliacoes - 1)) + nota) / filme.total_avaliacoes
+
     db.session.commit()
 
-    return jsonify({'mensagem': f'Nota {nota} registrada para o aluguel {aluguel.id}'}), 200 
+    return jsonify({'mensagem': f'Nota {nota} registrada para o aluguel {aluguel.id} e filme atualizado.'}), 200
 
 
 @aluguel_bp.route('usuario/<int:usuario_id>/', methods=['GET'])
