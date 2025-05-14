@@ -1,8 +1,11 @@
 from flask import Blueprint, jsonify, request, abort
+from app.repositories.aluguel_repository import AluguelRepository
+from app.repositories.usuario_repository import UsuarioRepository
+from app.repositories.filme_repository import FilmeRepository
+from app.factories.aluguel_factory import AluguelFactory
 from app.models.aluguel import Aluguel
-from app.models.usuario import Usuario
-from app.models.filme import Filme
 from app import db
+
 
 aluguel_bp = Blueprint('aluguel', __name__)
 
@@ -36,10 +39,10 @@ def alugar_filme():
     if not usuario_id or not filme_id:
         abort(400, description="É necessário informar usuario_id e filme_id")
     
-    usuario = Usuario.query.get_or_404(usuario_id)
-    filme = Filme.query.get_or_404(filme_id)
+    usuario = UsuarioRepository.buscar_por_id(usuario_id)
+    filme = FilmeRepository.buscar_por_id(filme_id)
 
-    aluguel = Aluguel(usuario= usuario, filme = filme)
+    aluguel = AluguelFactory.criar_aluguel(usuario_id= usuario.id, filme_id = filme.id)
     db.session.add(aluguel)
     db.session.commit()
 
@@ -77,14 +80,25 @@ def avaliar_filme(aluguel_id):
     dados = request.get_json()
     nota = dados.get('nota')
 
-    if not nota or nota>10 or nota<0:
-        abort(400, description="Nota inválida, ela deve ser de 0 a 10")
+    if nota is None or nota < 0 or nota > 10:
+        abort(400, description="Nota inválida. Deve ser entre 0 e 10.")
 
-    aluguel = Aluguel.query.get_or_404(aluguel_id)
+    aluguel = AluguelRepository.buscar_por_id(aluguel_id)
+    if not aluguel:
+        abort(404, description="Aluguel não encontrado.")
+
+    if aluguel.nota is not None:
+        abort(400, description="Esse aluguel já foi avaliado.")
+
     aluguel.nota = nota
+
+    filme = aluguel.filme
+    filme.total_avaliacoes += 1
+    filme.nota_final = ((filme.nota_final * (filme.total_avaliacoes - 1)) + nota) / filme.total_avaliacoes
+
     db.session.commit()
 
-    return jsonify({'mensagem': f'Nota {nota} registrada para o aluguel {aluguel.id}'}), 200 
+    return jsonify({'mensagem': f'Nota {nota} registrada para o aluguel {aluguel.id} e filme atualizado.'}), 200
 
 
 @aluguel_bp.route('usuario/<int:usuario_id>/', methods=['GET'])
@@ -104,8 +118,9 @@ def lista_alugueis_usuario(usuario_id):
       404:
         description: Usuário não encontrado
     """
-    usuario = Usuario.query.get_or_404(usuario_id)
-    alugueis_usuario = Aluguel.query.filter_by(usuario_id = usuario.id).all()
+    
+    usuario = UsuarioRepository.buscar_por_id(usuario_id)
+    alugueis_usuario = AluguelRepository.listar_por_usuario(usuario_id=usuario.id)
 
     lista_alugueis_usuario = []
     for aluguel in alugueis_usuario:

@@ -2,7 +2,7 @@
 echo ">> Aguardando banco ficar pronto..."
 sleep 5
 
-echo ">> Aplicando migracae..."
+echo ">> Aplicando migracoes..."
 flask db upgrade
 
 echo ">> Populando banco ficticio..."

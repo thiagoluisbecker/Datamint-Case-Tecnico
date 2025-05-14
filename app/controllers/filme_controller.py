@@ -1,12 +1,12 @@
 from flask import Blueprint, jsonify
-from app.models.filme import Filme
+from app.repositories.filme_repository import FilmeRepository
 from app import db
 
 filme_bp = Blueprint('filme', __name__)
 
 @filme_bp.route('/', methods=['GET'])
 def get_filmes():
-    filmes = Filme.query.all()
+    filmes = FilmeRepository.listar_todos()
     if not filmes:
         return jsonify({'mensagem': f'Nenhum filme encontrado'}), 404
     
@@ -43,7 +43,7 @@ def get_filme_por_id(filme_id):
         description: Filme não encontrado
     """
 
-    filme = Filme.query.get_or_404(filme_id)
+    filme = FilmeRepository.buscar_por_id(filme_id)
     if not filme:
         return jsonify({'mensagem': f'Nenhum filme encontrado com o id {filme_id}'}), 404
     
@@ -60,38 +60,34 @@ def get_filme_por_id(filme_id):
 
 
 
-@filme_bp.route('/genero/<genero>', methods=['GET'])
-def get_filmes_por_genero(genero):
+@filme_bp.route('/genero/<int:genero_id>', methods=['GET'])
+def get_filmes_por_genero(genero_id):
     """
-    Lista filmes por gênero
+    Lista filmes por ID do gênero
     ---
     parameters:
-      - name: genero
+      - name: genero_id
         in: path
-        type: string
+        type: integer
         required: true
-        description: Gênero do filme
+        description: ID do gênero do filme
     responses:
       200:
         description: Lista de filmes encontrados
       404:
         description: Nenhum filme encontrado
     """
-    filmes = Filme.query.filter_by(genero=genero).all()
+    filmes = FilmeRepository.listar_por_genero_id(genero_id)
     if not filmes:
-        return jsonify({'mensagem': f'Nenhum filme encontrado no gênero: {genero}'}), 404
+        return jsonify({'mensagem': f'Nenhum filme encontrado para o gênero ID: {genero_id}'}), 404
 
-
-    lista_filmes = []
-    for filme in filmes:
-        lista_filmes.append({
-            'id': filme.id,
-            'nome': filme.nome,
-            'genero': filme.genero,
-            'sinopse': filme.sinopse,
-            'diretor': filme.diretor,
-            'ano': filme.ano,
-        })
-
+    lista_filmes = [{
+        'id': filme.id,
+        'nome': filme.nome,
+        'genero': filme.genero.nome,
+        'sinopse': filme.sinopse,
+        'diretor': filme.diretor,
+        'ano': filme.ano,
+    } for filme in filmes]
 
     return jsonify(lista_filmes), 200
