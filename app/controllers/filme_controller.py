@@ -41,7 +41,7 @@ def get_filme_por_id(filme_id):
 
 
 @filme_bp.route('/genero/<int:genero_id>', methods=['GET'])
-@cache.cached(timeout=300, key_prefix='filmes_por_genero')
+@cache.cached(timeout=300)
 def get_filmes_por_genero(genero_id):
     """
     Lista os filmes por ID do gênero
@@ -58,7 +58,9 @@ def get_filmes_por_genero(genero_id):
       404:
         description: Nenhum filme com o gênero encontrado
     """
+    print(genero_id)
     filmes = FilmeRepository.listar_por_genero_id(genero_id)
+    print(filmes)
     if not filmes:
         return jsonify({'mensagem': f'Nenhum filme encontrado para o gênero ID: {genero_id}'}), 404
 

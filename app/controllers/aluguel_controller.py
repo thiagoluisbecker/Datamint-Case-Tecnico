@@ -9,7 +9,7 @@ from app import db
 
 aluguel_bp = Blueprint('aluguel', __name__)
 
-@aluguel_bp.route('/', methods=['POST']) #passar so o filme
+@aluguel_bp.route('/', methods=['POST']) 
 def alugar_filme():
     """
     Usuário aluga um filme
