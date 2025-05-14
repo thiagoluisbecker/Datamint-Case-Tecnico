@@ -71,7 +71,7 @@ docker-compose exec app pytest
 - GET    /filmes/<filme_id>               -> Detalhes de filme
 - POST   /alugueis/                       -> Alugar filme (requer X-User-Id)
 - GET    /alugueis/meus-alugueis          -> Listar alugueis do usuário
-- POST   /meus-alugueis/<aluguel_id>/avaliar -> Avaliar filme alugado
+- POST   /alugueis/meus-alugueis/avaliar/<aluguel_id> -> Avaliar filme alugado
 
 **Usuário autenticado é simulado via header `X-User-Id`.**
 
