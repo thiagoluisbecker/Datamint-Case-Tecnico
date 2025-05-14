@@ -22,7 +22,7 @@ Este projeto é uma API RESTful desenvolvida em Flask que simula um sistema de l
 ### Passos
 
 1. Clone o repositório:
-git clone https://github.com/seu-usuario/seu-projeto.git
+git clone https://github.com/thiagoluisbecker/Datamint-Case-Tecnico.git
 cd seu-projeto
 
 2. SUba os containers
