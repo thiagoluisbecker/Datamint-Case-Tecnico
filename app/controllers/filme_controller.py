@@ -34,6 +34,8 @@ def get_filme_por_id(filme_id):
         'sinopse':filme.sinopse,
         'diretor':filme.diretor,
         'ano':filme.ano,
+        'nota_final': filme.nota_final,
+        'total_avaliacoes': filme.total_avaliacoes,
     }
 
     return jsonify(dados_filme), 200
