@@ -168,4 +168,4 @@ docker-compose exec app pytest
 - **Decisões:**
   - Cada aluguel é único e vinculado a um usuário e a um filme
   - Avaliação só pode ser feita se o usuário alugou o filme
-  - Cada aluguel só recebe uma única avaliação
+  - Cada aluguel só recebe uma única avaliação. Entretanto, da forma que foi implementado, um usuário pode alugar um mesmo filme diversas vezes e atribuir diferentes notas a um mesmo filme que ele alugou.
