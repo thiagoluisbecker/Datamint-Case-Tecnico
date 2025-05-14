@@ -26,7 +26,7 @@ git clone https://github.com/thiagoluisbecker/Datamint-Case-Tecnico.git
 cd Datamint-Case-Tecnico
 
 
-2. SUba os containers
+2. Suba os containers
 docker-compose up --build
 
 3. Acesse a API em:
