@@ -4,26 +4,6 @@ from app import cache
 
 filme_bp = Blueprint('filme', __name__)
 
-@filme_bp.route('/', methods=['GET'])
-def get_filmes():
-    filmes = FilmeRepository.listar_todos()
-    if not filmes:
-        return jsonify({'mensagem': f'Nenhum filme encontrado'}), 404
-    
-    lista_filmes = []
-    for filme in filmes:
-        lista_filmes.append({
-            'id': filme.id,
-            'nome': filme.nome,
-            'genero': filme.genero,
-            'sinopse': filme.sinopse,
-            'diretor': filme.diretor,
-            'ano': filme.ano,
-        })
-
-    return jsonify(lista_filmes), 200
-
-
 
 @filme_bp.route('/<int:filme_id>', methods=['GET'])
 def get_filme_por_id(filme_id):
@@ -50,7 +30,7 @@ def get_filme_por_id(filme_id):
     dados_filme = {
         'id':filme.id,
         'nome':filme.nome,
-        'genero':filme.genero,
+        'genero':filme.genero.nome,
         'sinopse':filme.sinopse,
         'diretor':filme.diretor,
         'ano':filme.ano,

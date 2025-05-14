@@ -59,7 +59,7 @@ def alugar_filme():
     return jsonify({'mensagem': 'Filme alugado com sucesso', 'aluguel_id': aluguel.id}), 200
 
 
-@aluguel_bp.route('/avaliar/<int:aluguel_id>', methods=['POST']) # id do filme, pq ja tenho id do usuario
+@aluguel_bp.route('/meus-alugueis/avaliar/<int:aluguel_id>', methods=['POST']) # id do filme, pq ja tenho id do usuario
 def avaliar_filme_alugado(aluguel_id):
     """
     Avalia filme alugado
