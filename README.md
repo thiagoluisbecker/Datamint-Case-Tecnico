@@ -26,17 +26,17 @@ git clone https://github.com/thiagoluisbecker/Datamint-Case-Tecnico.git
 cd Datamint-Case-Tecnico
 
 
-2. SUba os containers
-docker-compose up --build
+2. Suba os containers
+`docker-compose up --build`
 
 3. Acesse a API em:
 http://localhost:5000 ou http://localhost:5000/apidocs/ (pelo Swagger)
 
 4. Conexão Banco postgresql (Dbeaver):
-banco de dados: filmes_api
-port: 5432
-nome de usuário: filmes_user
-senha: postgres
+- banco de dados: filmes_api
+- port: 5432
+- nome de usuário: filmes_user
+- senha: postgres
 
 ### Rodando migracoes (se necessario):
 docker-compose exec app flask db upgrade
@@ -166,6 +166,6 @@ docker-compose exec app pytest
   - Muitos-para-um com `Filme`
 
 - **Decisões:**
-  - Cada aluguel é único e vinculado ao usuário
+  - Cada aluguel é único e vinculado a um usuário e a um filme
   - Avaliação só pode ser feita se o usuário alugou o filme
   - Cada aluguel só recebe uma única avaliação
