@@ -1,5 +1,4 @@
 from app.factories.filme_factory import FilmeFactory
-from app.models.usuario import Usuario
 from app.factories.usuario_factory import UsuarioFactory
 from app.factories.genero_factory import GeneroFactory
 from app import db
