@@ -1,7 +1,7 @@
 # Datamint Case Tecnico
 
 
-# 🎬 API de Locação de Filmes - Case Técnico FilmesTop.com
+#  API de Locação de Filmes - Case Técnico FilmesTop.com
 
 Este projeto é uma API RESTful desenvolvida em Flask que simula um sistema de locação de filmes, permitindo que usuários possam:
 1. Visualizar a lista de filmes disponíveis por gênero;
@@ -87,10 +87,84 @@ POST   /meus-alugueis/<aluguel_id>/avaliar -> Avaliar filme alugado
   - Factory Pattern.
 - Cache  adicionado no endpoint de listar filmes por gênero (`GET /filmes/genero/<genero_id>`) com Timing de 5 minutos.
 - Versionamento de banco via Alembic/Flask-Migrate.
-- Adição das colunas `nota_final` e `total_avaliacoes` em Filme via migração.
+- Adição das colunas `nota_final` e `total_avaliacoes` em Filme via migração (em default=0).
 - Atualização automática de `nota_final` e `total_avaliacoes` ao avaliar um filme.
 
 
 
-### Observações Gerais
+## Modelos de dados
 
+### Filme
+**Representa um filme disponível para locação.**
+
+- **Atributos:**
+  - `id`
+  - `nome`
+  - `ano`
+  - `sinopse`
+  - `diretor`
+  - `genero_id` (relacionamento com `Genero`)
+  - `nota_final` (média calculada automaticamente após avaliações)
+  - `total_avaliacoes` (contador incremental de avaliações)
+
+- **Relacionamentos:**
+  - Muitos-para-um com `Genero`
+  - Um-para-muitos com `Aluguel`
+
+- **Decisões:**
+  - Criado como entidade separada para permitir melhor consistência dos dados
+  - Permite filtragem apenas por ID (evitando inconsistências causadas por strings soltas)
+
+---
+
+### Genero
+**Representa a categoria do filme (por exemplo, Ação, Comédia).**
+
+- **Atributos:**
+  - `id`
+  - `nome`
+
+- **Relacionamentos:**
+  - Um-para-muitos com `Filme`
+
+- **Decisões:**
+  - Entidade separada para garantir integridade e facilitar filtro por ID
+
+---
+
+### Usuario
+**Representa o usuário que pode alugar e avaliar filmes.**
+
+- **Atributos:**
+  - `id`
+  - `nome`
+  - `email`
+  - `celular`
+
+- **Relacionamentos:**
+  - Um-para-muitos com `Aluguel`
+
+- **Decisões:**
+  - Usuário “logado” simulado via header `X-User-Id`
+  - Permite múltiplos alugueis e avaliações
+
+---
+
+### Aluguel
+**Representa uma instância de locação de um filme por um usuário.**
+
+- **Atributos:**
+  - `id`
+  - `usuario_id`
+  - `filme_id`
+  - `data_locacao`
+  - `nota` (opcional, podendo ser preenchida posteriormente)
+
+- **Relacionamentos:**
+  - Muitos-para-um com `Usuario`
+  - Muitos-para-um com `Filme`
+
+- **Decisões:**
+  - Cada aluguel é único e vinculado ao usuário
+  - Avaliação só pode ser feita se o usuário alugou o filme
+  - Cada aluguel só recebe uma única avaliação
