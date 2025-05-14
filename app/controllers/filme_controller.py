@@ -44,7 +44,7 @@ def get_filme_por_id(filme_id):
 @cache.cached(timeout=300, key_prefix='filmes_por_genero')
 def get_filmes_por_genero(genero_id):
     """
-    Lista filmes por ID do gênero
+    Lista os filmes por ID do gênero
     ---
     parameters:
       - name: genero_id
@@ -54,9 +54,9 @@ def get_filmes_por_genero(genero_id):
         description: ID do gênero do filme
     responses:
       200:
-        description: Lista de filmes encontrados
+        description: Lista de filmes encontrados para o gênero
       404:
-        description: Nenhum filme encontrado
+        description: Nenhum filme com o gênero encontrado
     """
     filmes = FilmeRepository.listar_por_genero_id(genero_id)
     if not filmes:

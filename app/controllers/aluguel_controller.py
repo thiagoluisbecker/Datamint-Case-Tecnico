@@ -12,7 +12,7 @@ aluguel_bp = Blueprint('aluguel', __name__)
 @aluguel_bp.route('/', methods=['POST']) #passar so o filme
 def alugar_filme():
     """
-    Aluga um filme
+    Usuário aluga um filme
     ---
     parameters:
       - name: X-User-Id
@@ -62,7 +62,7 @@ def alugar_filme():
 @aluguel_bp.route('/meus-alugueis/avaliar/<int:aluguel_id>', methods=['POST']) # id do filme, pq ja tenho id do usuario
 def avaliar_filme_alugado(aluguel_id):
     """
-    Avalia filme alugado
+    Avalia filme alugado por um usuário
     ---
     parameters:
       - name: X-User-Id
@@ -127,7 +127,7 @@ def avaliar_filme_alugado(aluguel_id):
 @aluguel_bp.route('/meus-alugueis', methods=['GET'])
 def lista_alugueis_usuario():
     """
-    Listar alugueis do usuario
+    Lista filmes alugados do usuário
     ---
     parameters:
       - name: X-User-Id
