@@ -56,7 +56,7 @@ def alugar_filme():
     db.session.add(aluguel)
     db.session.commit()
 
-    return jsonify({'mensagem': 'Filme alugado com sucesso', 'aluguel_id': aluguel.id}), 200
+    return jsonify({'mensagem': f'Filme "{filme.nome}" alugado com sucesso', 'aluguel_id': aluguel.id}), 200
 
 
 @aluguel_bp.route('/meus-alugueis/avaliar/<int:aluguel_id>', methods=['POST']) # id do filme, pq ja tenho id do usuario
@@ -121,7 +121,7 @@ def avaliar_filme_alugado(aluguel_id):
 
     db.session.commit()
 
-    return jsonify({'mensagem': f'Nota {nota} registrada para o aluguel {aluguel.id} e filme atualizado.'}), 200
+    return jsonify({'mensagem': f'Nota {nota} registrada para o aluguel {aluguel.id} e filme ({filme.nome} / {filme.id}) atualizado.'}), 200
 
 
 @aluguel_bp.route('/meus-alugueis', methods=['GET'])
