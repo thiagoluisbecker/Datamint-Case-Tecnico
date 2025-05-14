@@ -34,7 +34,7 @@ def criar_generos():
     return generos
 
 
-def criar_filmes(generos, quantidade=100):
+def criar_filmes(generos, quantidade=20):
     """Cria filmes associando a um genero_id existente."""
     filmes = [
         FilmeFactory.criar_filme(
@@ -51,7 +51,7 @@ def criar_filmes(generos, quantidade=100):
     return filmes
 
 
-def criar_usuarios(quantidade=50):
+def criar_usuarios(quantidade=10):
     """Cria usuários com Factory e salva pelo Repository."""
     usuarios = [
         UsuarioFactory.criar_usuario(

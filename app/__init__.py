@@ -3,18 +3,26 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flasgger import Swagger
+from flask_caching import Cache
 
 db = SQLAlchemy()
 migrate = Migrate()
+cache = Cache()
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
+    #Config Banco
     app.config.from_mapping(
     SECRET_KEY='dev',
     SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI', 'sqlite:///default.db'),
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
-)
+    )
+
+    #Config cache
+    app.config['CACHE_TYPE'] = 'SimpleCache'
+    app.config['CACHE_DEFAULT_TIMEOUT'] = 300 
+    
 
     if test_config:
         app.config.from_mapping(test_config)
@@ -25,10 +33,13 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
+    
+    
     db.init_app(app)
     migrate.init_app(app, db)
+    cache.init_app(app)
 
+    #Swagger - Flasgger
     Swagger(app)
 
     from app.models import filme, usuario, aluguel, genero

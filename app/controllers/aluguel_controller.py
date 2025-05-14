@@ -9,52 +9,67 @@ from app import db
 
 aluguel_bp = Blueprint('aluguel', __name__)
 
-@aluguel_bp.route('/', methods=['POST'])
+@aluguel_bp.route('/', methods=['POST']) #passar so o filme
 def alugar_filme():
     """
     Aluga um filme
     ---
     parameters:
-      - name: body
+      - name: X-User-Id
+        in: header
+        type: integer
+        required: true
+        description: ID do usuário autenticado (simulação)
+      - name: filme_id
         in: body
         required: true
         schema:
           properties:
-            usuario_id:
-              type: integer
-              description: ID do usuário
             filme_id:
               type: integer
               description: ID do filme
     responses:
-      201:
+      200:
         description: Filme alugado com sucesso
       400:
         description: Dados inválidos
+      404:
+        description: Filme não encontrado
     """
     dados = request.get_json()
-    usuario_id = dados.get('usuario_id')
     filme_id = dados.get('filme_id')
 
-    if not usuario_id or not filme_id:
-        abort(400, description="É necessário informar usuario_id e filme_id")
     
-    usuario = UsuarioRepository.buscar_por_id(usuario_id)
-    filme = FilmeRepository.buscar_por_id(filme_id)
+    usuario_id = request.headers.get('X-User-Id', type=int)
+    if not usuario_id or not filme_id:
+        abort(400, description="É necessário informar filme_id e estar autenticado via X-User-Id")
 
-    aluguel = AluguelFactory.criar_aluguel(usuario_id= usuario.id, filme_id = filme.id)
+    usuario = UsuarioRepository.buscar_por_id(usuario_id)
+    if not usuario:
+        abort(404, description="Usuário não encontrado.")
+
+    filme = FilmeRepository.buscar_por_id(filme_id)
+    if not filme:
+        abort(404, description="Filme não encontrado.")
+
+    aluguel = AluguelFactory.criar_aluguel(usuario_id=usuario.id, filme_id=filme.id)
     db.session.add(aluguel)
     db.session.commit()
 
-    return jsonify({'mensagem':'Filme alugado com sucesso', 'aluguel_id':aluguel.id}), 201
+    return jsonify({'mensagem': 'Filme alugado com sucesso', 'aluguel_id': aluguel.id}), 200
 
 
-@aluguel_bp.route('/<int:aluguel_id>/avaliar', methods=['POST'])
-def avaliar_filme(aluguel_id):
+@aluguel_bp.route('/avaliar/<int:aluguel_id>', methods=['POST']) # id do filme, pq ja tenho id do usuario
+def avaliar_filme_alugado(aluguel_id):
     """
     Avalia filme alugado
     ---
     parameters:
+      - name: X-User-Id
+        in: header
+        type: integer
+        required: true
+        description: ID do usuário autenticado (simulação)
       - name: aluguel_id
         in: path
         type: integer
@@ -74,11 +89,15 @@ def avaliar_filme(aluguel_id):
         description: Nota registrada
       400:
         description: Nota inválida
+      403:
+        description: Permissão inválida para avaliar o aluguel
       404:
         description: Aluguel não encontrado
     """
     dados = request.get_json()
     nota = dados.get('nota')
+
+    usuario_id = request.headers.get('X-User-Id', type=int)
 
     if nota is None or nota < 0 or nota > 10:
         abort(400, description="Nota inválida. Deve ser entre 0 e 10.")
@@ -89,6 +108,10 @@ def avaliar_filme(aluguel_id):
 
     if aluguel.nota is not None:
         abort(400, description="Esse aluguel já foi avaliado.")
+
+    if aluguel.usuario_id != usuario_id:
+        abort(403, description="Você não tem permissão para avaliar este aluguel")
+
 
     aluguel.nota = nota
 
@@ -101,36 +124,42 @@ def avaliar_filme(aluguel_id):
     return jsonify({'mensagem': f'Nota {nota} registrada para o aluguel {aluguel.id} e filme atualizado.'}), 200
 
 
-@aluguel_bp.route('usuario/<int:usuario_id>/', methods=['GET'])
-def lista_alugueis_usuario(usuario_id):
+@aluguel_bp.route('/meus-alugueis', methods=['GET'])
+def lista_alugueis_usuario():
     """
-    Listar todos os filmes alugados de um usuário
+    Listar alugueis do usuario
     ---
     parameters:
-      - name: usuario_id
-        in: path
+      - name: X-User-Id
+        in: header
         type: integer
         required: true
-        description: ID do usuário
+        description: ID do usuário autenticado (simulação)
     responses:
       200:
         description: Lista de alugueis
+      400:
+        description: O usuário deve estar autenticado via X-User-Id
       404:
         description: Usuário não encontrado
     """
     
+    usuario_id = request.headers.get('X-User-Id', type=int)
+    if not usuario_id:
+        abort(400, description="O usuário deve estar autenticado via X-User-Id")
+
     usuario = UsuarioRepository.buscar_por_id(usuario_id)
+    if not usuario:
+        abort(404, description="Usuário não encontrado.")
+
     alugueis_usuario = AluguelRepository.listar_por_usuario(usuario_id=usuario.id)
-
-    lista_alugueis_usuario = []
-    for aluguel in alugueis_usuario:
-        dados_aluguel = {
-            'filme_id':aluguel.filme.id,
-            'filme_nome':aluguel.filme.nome,
-            'nota':aluguel.nota,
-            'data_locacao':aluguel.data_locacao,
-        }
-        lista_alugueis_usuario.append(dados_aluguel)
-
+    if not alugueis_usuario:
+        abort(404, description="Aluguel nâo encontrado.")
+        
+    lista_alugueis_usuario = [{
+        'filme_nome': aluguel.filme.nome,
+        'nota': aluguel.nota,
+        'data_locacao': aluguel.data_locacao,
+    } for aluguel in alugueis_usuario]
 
     return jsonify(lista_alugueis_usuario)

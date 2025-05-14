@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 from app.repositories.filme_repository import FilmeRepository
-from app import db
+from app import cache
 
 filme_bp = Blueprint('filme', __name__)
 
@@ -61,6 +61,7 @@ def get_filme_por_id(filme_id):
 
 
 @filme_bp.route('/genero/<int:genero_id>', methods=['GET'])
+@cache.cached(timeout=300, key_prefix='filmes_por_genero')
 def get_filmes_por_genero(genero_id):
     """
     Lista filmes por ID do gênero
