@@ -23,13 +23,14 @@ Este projeto é uma API RESTful desenvolvida em Flask que simula um sistema de l
 
 1. Clone o repositório:
 git clone https://github.com/thiagoluisbecker/Datamint-Case-Tecnico.git
-cd seu-projeto
+cd Datamint-Case-Tecnico
+
 
 2. SUba os containers
 docker-compose up --build
 
 3. Acesse a API em:
-http://localhost:5000
+http://localhost:5000 ou http://localhost:5000/apidocs/ (pelo Swagger)
 
 4. Conexão Banco postgresql (Dbeaver):
 banco de dados: filmes_api
