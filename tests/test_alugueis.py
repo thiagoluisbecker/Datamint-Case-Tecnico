@@ -5,7 +5,7 @@ from app.factories.genero_factory import GeneroFactory
 from app import db
 
 
-
+#--- TEstes alugar_filme ---
 def test_alugar_filme(client, app):
     with app.app_context():
         genero = GeneroFactory.criar_genero('Ação')
@@ -37,7 +37,22 @@ def test_alugar_filme_usuario_inexistente(client, app):
     assert response.status_code == 404
 
 
+def test_alugar_filme_filme_inexistente(client, app):
+    with app.app_context():
+        genero = GeneroFactory.criar_genero('Ação')
+        db.session.add(genero)
+        db.session.commit()
 
+        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111')
+        db.session.add(usuario)
+        db.session.commit()
+
+    response = client.post('/alugueis/', json={'filme_id': 1}, headers={'X-User-Id': 9999})
+    assert response.status_code == 404
+
+
+
+#--- Testes avaliar_filme ---
 def test_avaliar_filme_alugado(client, app):
     with app.app_context():
         genero = GeneroFactory.criar_genero('Ação')
@@ -94,6 +109,8 @@ def test_avaliar_filme_com_nota_invalida(client, app):
     assert response.status_code == 400
 
 
+
+#--- Testes listar_alugueis ---
 def test_listar_meus_alugueis(client, app):
     with app.app_context():
         genero = GeneroFactory.criar_genero('Ação')
