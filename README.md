@@ -172,6 +172,6 @@ docker-compose exec app pytest
 
 ### Observações 
   - Para acessar as rotas de alugueis/, o usuario precisa estar logado. A conta de acesso que está no placeholder da rota de login no swagger (thiagobeckerrocha@gmail.com) já está configurada para dar 'execute' e logar esse usuário na API
-  - Antes do merge com a branch Auth, a api precisava de um X-user-id para simular um usuario autenticado.
   - Para mexer nas rotas sobre filmes/, o usuario nao precisa estar logado.
+  -  *Antes do merge da Main com a branch Auth, a api precisava de um X-user-id para "simular" um usuario autenticado.*
   
