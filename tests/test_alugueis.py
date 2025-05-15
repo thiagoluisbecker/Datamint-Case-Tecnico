@@ -1,135 +1,209 @@
 from app.factories.filme_factory import FilmeFactory
 from app.factories.usuario_factory import UsuarioFactory
 from app.factories.genero_factory import GeneroFactory
+from werkzeug.security import generate_password_hash
 from app.extensions import db
+
+def login(client, email, senha):
+    return client.post("/auth/login", json={"email": email, "senha": senha})
+
 
 
 #--- TEstes alugar_filme ---
+
 def test_alugar_filme(client, app):
     with app.app_context():
-        genero = GeneroFactory.criar_genero('Ação')
-        db.session.add(genero)
+        genero  = GeneroFactory.criar_genero("Ação")
+        usuario = UsuarioFactory.criar_usuario(
+            nome="Thiago",
+            email="thiago@teste.com",
+            celular="11111111111",
+            senha="teste"     
+        )
+        filme   = FilmeFactory.criar_filme(
+            "Matrix", genero=genero, ano=1999, sinopse="...", diretor="..."
+        )
+        db.session.add_all([genero, usuario, filme])
         db.session.commit()
 
-        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111', senha='teste')
-        filme = FilmeFactory.criar_filme('Matrix', genero_id=genero.id, ano=1999, sinopse='...', diretor='...')
+   
+        resp_login = login(client, usuario.email, "teste")
+        assert resp_login.status_code == 200
 
-        db.session.add_all([usuario, filme])
-        db.session.commit()
-
-    response = client.post('/alugueis/', json={'filme_id': 1}, headers={'X-User-Id': 1})
-    assert response.status_code == 200
-    assert 'aluguel_id' in response.get_json()
+        resp = client.post("/alugueis/", json={"filme_id": filme.id})
+        assert resp.status_code == 200
+        assert "aluguel_id" in resp.get_json()
 
 
 def test_alugar_filme_usuario_inexistente(client, app):
     with app.app_context():
-        genero = GeneroFactory.criar_genero('Ação')
-        db.session.add(genero)
-        db.session.commit()
+        genero = GeneroFactory.criar_genero("Ação")
+        filme  = FilmeFactory.criar_filme("Matrix", genero=genero, ano=1999)
+        db.session.add_all([genero, filme]); db.session.commit()
 
-        filme = FilmeFactory.criar_filme('Matrix', genero_id=genero.id, ano=1999, sinopse='...', diretor='...')
-        db.session.add(filme)
-        db.session.commit()
 
-    response = client.post('/alugueis/', json={'filme_id': 1}, headers={'X-User-Id': 9999})
-    assert response.status_code == 404
-
+        resp = client.post("/alugueis/", json={"filme_id": filme.id})
+        assert resp.status_code == 401
 
 def test_alugar_filme_filme_inexistente(client, app):
     with app.app_context():
-        genero = GeneroFactory.criar_genero('Ação')
-        db.session.add(genero)
-        db.session.commit()
+        usuario = UsuarioFactory.criar_usuario(
+            nome="Thiago",
+            email="thiago@teste.com",
+            celular="11111111111",
+            senha="teste"     
+        )
+        db.session.add(usuario); db.session.commit()
 
-        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111', senha='teste')
-        db.session.add(usuario)
-        db.session.commit()
+        login(client, usuario.email, "teste")         
 
-    response = client.post('/alugueis/', json={'filme_id': 1}, headers={'X-User-Id': 9999})
-    assert response.status_code == 404
+        resp = client.post("/alugueis/", json={"filme_id": 999})
+        assert resp.status_code == 404           
 
 
 
 #--- Testes avaliar_filme ---
 def test_avaliar_filme_alugado(client, app):
     with app.app_context():
-        genero = GeneroFactory.criar_genero('Ação')
-        db.session.add(genero)
+        genero = GeneroFactory.criar_genero("Ação")
+        usuario = UsuarioFactory.criar_usuario(
+            nome="Thiago",
+            email="thiago@teste.com",
+            celular="11111111111",
+            senha="teste"      
+        )
+        filme = FilmeFactory.criar_filme(
+            "Matrix",
+            genero=genero,
+            ano=1999,
+            sinopse="...",
+            diretor="..."
+        )
+        db.session.add_all([genero, usuario, filme])
         db.session.commit()
 
-        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111', senha='teste')
-        filme = FilmeFactory.criar_filme('Matrix', genero_id=genero.id, ano=1999, sinopse='...', diretor='...')
-        db.session.add_all([usuario, filme])
-        db.session.commit()
+        assert login(client, usuario.email, "teste").status_code == 200
 
-        response = client.post('/alugueis/', json={'filme_id': 1}, headers={'X-User-Id': 1})
-        aluguel_id = response.get_json()['aluguel_id']
+        resp_alugar = client.post("/alugueis/", json={"filme_id": filme.id})
+        assert resp_alugar.status_code == 200         
+        data = resp_alugar.get_json()
+        assert "aluguel_id" in data                   
+        aluguel_id = data["aluguel_id"]
 
-    response = client.post(f'/alugueis/meus-alugueis/avaliar/{aluguel_id}', json={'nota': 8}, headers={'X-User-Id': 1})
-    
-    assert response.status_code == 200
+        resp_avaliar = client.post(
+            f"/alugueis/meus-alugueis/avaliar/{aluguel_id}",   
+            json={"nota": 8}
+        )
+        assert resp_avaliar.status_code == 200
 
 
 def test_avaliar_filme_que_usuario_nao_aluguou(client, app):
     with app.app_context():
-        genero = GeneroFactory.criar_genero('Ação')
-        db.session.add(genero)
+        genero = GeneroFactory.criar_genero("Ação")
+
+        usuario1 = UsuarioFactory.criar_usuario(
+            nome="Thiago",
+            email="thiago@teste.com",
+            celular="11111",
+            senha="teste"
+        )
+        usuario2 = UsuarioFactory.criar_usuario(
+            nome="Outro",
+            email="outro@teste.com",
+            celular="22222",
+            senha="teste2"
+        )
+
+        filme = FilmeFactory.criar_filme(
+            "Matrix",
+            genero=genero,
+            ano=1999,
+            sinopse="...",
+            diretor="..."
+        )
+        db.session.add_all([genero, usuario1, usuario2, filme])
         db.session.commit()
 
-        usuario1 = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111', senha='teste')
-        usuario2 = UsuarioFactory.criar_usuario(nome='Outro User', email='outro@teste.com', celular = '1111111111111', senha='teste2')
-        filme = FilmeFactory.criar_filme('Matrix', genero_id=genero.id, ano=1999, sinopse='...', diretor='...')
-        db.session.add_all([usuario1, usuario2, filme])
-        db.session.commit()
+        assert login(client, usuario1.email, "teste").status_code == 200
 
-        response = client.post('/alugueis/', json={'filme_id': 1}, headers={'X-User-Id': 1})
-        aluguel_id = response.get_json()['aluguel_id']
+        resp_alugar = client.post("/alugueis/", json={"filme_id": filme.id})
+        assert resp_alugar.status_code == 200               
+        aluguel_id = resp_alugar.get_json()["aluguel_id"]   
 
-    response = client.post(f'/alugueis/meus-alugueis/avaliar/{aluguel_id}', json={'nota': 8}, headers={'X-User-Id': 2})
-    assert response.status_code == 403
+        
+        client.post("/auth/logout")
+
+        
+        assert login(client, usuario2.email, "teste2").status_code == 200
+
+        resp_avaliar = client.post(
+            f"/alugueis/meus-alugueis/avaliar/{aluguel_id}",
+            json={"nota": 8}
+        )
+        assert resp_avaliar.status_code == 403              
 
 
 def test_avaliar_filme_com_nota_invalida(client, app):
     with app.app_context():
-        genero = GeneroFactory.criar_genero('Ação')
-        db.session.add(genero)
+        genero = GeneroFactory.criar_genero("Ação")
+
+        usuario = UsuarioFactory.criar_usuario(
+            nome="Thiago",
+            email="thiago@teste.com",
+            celular="11111111111",
+            senha="teste"                 
+        )
+        filme = FilmeFactory.criar_filme(
+            "Matrix",
+            genero=genero,
+            ano=1999,
+            sinopse="...",
+            diretor="..."
+        )
+        db.session.add_all([genero, usuario, filme])
         db.session.commit()
 
-        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111', senha='teste')
-        filme = FilmeFactory.criar_filme('Matrix', genero_id=genero.id, ano=1999, sinopse='...', diretor='...')
-        db.session.add_all([usuario, filme])
-        db.session.commit()
+        login(client, usuario.email, "teste")
 
-        response = client.post('/alugueis/', json={'filme_id': 1}, headers={'X-User-Id': 1})
-        aluguel_id = response.get_json()['aluguel_id']
-
-    response = client.post(f'/alugueis/meus-alugueis/avaliar/{aluguel_id}', json={'nota': 15}, headers={'X-User-Id': 1})
-    assert response.status_code == 400
-
+        resp_alugar = client.post("/alugueis/", json={"filme_id": filme.id})
+        assert resp_alugar.status_code == 200          
+        aluguel_id = resp_alugar.get_json()["aluguel_id"]
+    
+        resp_avaliar = client.post(
+            f"/alugueis/meus-alugueis/avaliar/{aluguel_id}",
+            json={"nota": 15}
+        )
+        assert resp_avaliar.status_code == 400          
 
 
 #--- Testes listar_alugueis ---
 def test_listar_meus_alugueis(client, app):
     with app.app_context():
-        genero = GeneroFactory.criar_genero('Ação')
-        db.session.add(genero)
+        genero = GeneroFactory.criar_genero("Ação")
+        usuario = UsuarioFactory.criar_usuario(
+            nome="Thiago",
+            email="thiago@teste.com",
+            celular="11111111111",
+            senha="teste"                     # texto → factory grava hash
+        )
+        filme = FilmeFactory.criar_filme(
+            "Matrix",
+            genero=genero,
+            ano=1999,
+            sinopse="...",
+            diretor="..."
+        )
+        db.session.add_all([genero, usuario, filme])
         db.session.commit()
 
-        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular='11111111111', senha='teste')
-        db.session.add(usuario)
-        db.session.commit()
-        usuario_id = usuario.id  
+        login(client, usuario.email, "teste")
 
-        filme = FilmeFactory.criar_filme('Matrix', genero_id=genero.id, ano=1999, sinopse='...', diretor='...')
-        db.session.add(filme)
-        db.session.commit()
-
-        client.post('/alugueis/', json={'filme_id': filme.id}, headers={'X-User-Id': usuario.id  })
-
-    response = client.get('/alugueis/meus-alugueis', headers={'X-User-Id': usuario_id})
-    assert response.status_code == 200
-    assert b'Matrix' in response.data
+        resp_alugar = client.post("/alugueis/", json={"filme_id": filme.id})
+        assert resp_alugar.status_code == 200
+    
+        resp_lista = client.get("/alugueis/meus-alugueis")
+        assert resp_lista.status_code == 200
+        assert b"Matrix" in resp_lista.data
 
 
 

@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, jsonify
 from flask_migrate import Migrate
 from flasgger import Swagger
 from flask_caching import Cache
@@ -14,6 +14,10 @@ cache   = Cache()
 @login_manager.user_loader
 def load_user(user_id: str):
     return db.session.get(Usuario, int(user_id))
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    return jsonify({"erro": "Login necessário"}), 401
 
 
 def create_app(test_config=None):

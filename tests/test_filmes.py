@@ -10,8 +10,8 @@ def test_get_filmes_por_genero_com_filmes(client, app):
         db.session.add(genero)
         db.session.commit()
 
-        filme1 = FilmeFactory.criar_filme(nome='Matrix', genero_id=genero.id, ano=1999, sinopse='...', diretor='Wachowski')
-        filme2 = FilmeFactory.criar_filme(nome='Mad Max', genero_id=genero.id, ano=1979, sinopse='...', diretor='George Miller')
+        filme1 = FilmeFactory.criar_filme(nome='Matrix', genero=genero, ano=1999, sinopse='...', diretor='Wachowski')
+        filme2 = FilmeFactory.criar_filme(nome='Mad Max', genero=genero, ano=1979, sinopse='...', diretor='George Miller')
         db.session.add_all([filme1, filme2])
         db.session.commit()
 
@@ -66,7 +66,7 @@ def test_detalhes_filme_existente(client, app):
         db.session.add(genero)
         db.session.commit()
 
-        filme = FilmeFactory.criar_filme(nome='Matrix', genero_id=genero.id, ano=1999, sinopse='...', diretor='Wachowski')
+        filme = FilmeFactory.criar_filme(nome='Matrix', genero=genero, ano=1999, sinopse='...', diretor='Wachowski')
         db.session.add(filme)
         db.session.commit()
 
