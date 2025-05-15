@@ -99,13 +99,20 @@ def popular_db():
         usuarios = criar_usuarios()
         alugueis = criar_alugueis(usuarios, filmes)
         
+        usuarios_especiais = []
         usuario_teste = UsuarioFactory.criar_usuario(
             nome='Thiago Rocha',
             celular=fake.phone_number(),
             email='thiagobeckerrocha@gmail.com',
             senha=f'teste_thiago'
         )
-        db.session.add(usuario_teste)
+        usuario_teste2 = UsuarioFactory.criar_usuario(
+            nome='Thiago Becker',
+            celular=fake.phone_number(),
+            email='thiagobeckerrocha2@gmail.com',
+            senha=f'teste_thiago2'
+        )
+        db.session.add_all(usuario_teste)
         db.session.commit()
         
 
