@@ -1,4 +1,5 @@
-from app import create_app, db
+from app import create_app
+from app.extensions import db
 from app.models.aluguel import Aluguel
 from app.repositories.filme_repository import FilmeRepository
 from app.repositories.usuario_repository import UsuarioRepository
@@ -57,10 +58,12 @@ def criar_usuarios(quantidade=10):
         UsuarioFactory.criar_usuario(
             nome=fake.name(),
             celular=fake.phone_number(),
-            email=fake.unique.email()
+            email=fake.unique.email(),
+            senha=f'teste{_}'
         )
         for _ in range(quantidade)
     ]
+    
     db.session.add_all(usuarios)
     db.session.commit()
     return usuarios
@@ -95,6 +98,25 @@ def popular_db():
         filmes = criar_filmes(generos)
         usuarios = criar_usuarios()
         alugueis = criar_alugueis(usuarios, filmes)
+        
+        usuarios_especiais = []
+        usuario_teste = UsuarioFactory.criar_usuario(
+            nome='Thiago Rocha',
+            celular=fake.phone_number(),
+            email='thiagobeckerrocha@gmail.com',
+            senha=f'teste_thiago'
+        )
+        usuario_teste2 = UsuarioFactory.criar_usuario(
+            nome='Thiago Becker',
+            celular=fake.phone_number(),
+            email='thiagobeckerrocha2@gmail.com',
+            senha=f'teste_thiago2'
+        )
+        usuarios_especiais.append(usuario_teste)
+        usuarios_especiais.append(usuario_teste2)
+        
+        db.session.add_all(usuarios_especiais)
+        db.session.commit()
         
 
 if __name__ == "__main__":

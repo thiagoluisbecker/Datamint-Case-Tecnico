@@ -1,5 +1,5 @@
 from app.models.usuario import Usuario
-from app import db
+from app.extensions import db
 
 class UsuarioRepository:
     

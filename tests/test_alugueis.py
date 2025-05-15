@@ -1,7 +1,7 @@
 from app.factories.filme_factory import FilmeFactory
 from app.factories.usuario_factory import UsuarioFactory
 from app.factories.genero_factory import GeneroFactory
-from app import db
+from app.extensions import db
 
 
 #--- TEstes alugar_filme ---
@@ -11,7 +11,7 @@ def test_alugar_filme(client, app):
         db.session.add(genero)
         db.session.commit()
 
-        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111')
+        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111', senha='teste')
         filme = FilmeFactory.criar_filme('Matrix', genero_id=genero.id, ano=1999, sinopse='...', diretor='...')
 
         db.session.add_all([usuario, filme])
@@ -42,7 +42,7 @@ def test_alugar_filme_filme_inexistente(client, app):
         db.session.add(genero)
         db.session.commit()
 
-        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111')
+        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111', senha='teste')
         db.session.add(usuario)
         db.session.commit()
 
@@ -58,7 +58,7 @@ def test_avaliar_filme_alugado(client, app):
         db.session.add(genero)
         db.session.commit()
 
-        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111')
+        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111', senha='teste')
         filme = FilmeFactory.criar_filme('Matrix', genero_id=genero.id, ano=1999, sinopse='...', diretor='...')
         db.session.add_all([usuario, filme])
         db.session.commit()
@@ -77,8 +77,8 @@ def test_avaliar_filme_que_usuario_nao_aluguou(client, app):
         db.session.add(genero)
         db.session.commit()
 
-        usuario1 = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111')
-        usuario2 = UsuarioFactory.criar_usuario(nome='Outro User', email='outro@teste.com', celular = '1111111111111')
+        usuario1 = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111', senha='teste')
+        usuario2 = UsuarioFactory.criar_usuario(nome='Outro User', email='outro@teste.com', celular = '1111111111111', senha='teste2')
         filme = FilmeFactory.criar_filme('Matrix', genero_id=genero.id, ano=1999, sinopse='...', diretor='...')
         db.session.add_all([usuario1, usuario2, filme])
         db.session.commit()
@@ -96,7 +96,7 @@ def test_avaliar_filme_com_nota_invalida(client, app):
         db.session.add(genero)
         db.session.commit()
 
-        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111')
+        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular = '1111111111111', senha='teste')
         filme = FilmeFactory.criar_filme('Matrix', genero_id=genero.id, ano=1999, sinopse='...', diretor='...')
         db.session.add_all([usuario, filme])
         db.session.commit()
@@ -116,7 +116,7 @@ def test_listar_meus_alugueis(client, app):
         db.session.add(genero)
         db.session.commit()
 
-        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular='11111111111')
+        usuario = UsuarioFactory.criar_usuario(nome='Thiago', email='thiago@teste.com', celular='11111111111', senha='teste')
         db.session.add(usuario)
         db.session.commit()
         usuario_id = usuario.id  

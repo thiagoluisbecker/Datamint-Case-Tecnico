@@ -1,6 +1,6 @@
 from app.factories.filme_factory import FilmeFactory
 from app.factories.genero_factory import GeneroFactory
-from app import db
+from app.extensions import db
 
 
 #---TEstes filmes_por_genero ---
