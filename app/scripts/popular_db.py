@@ -35,20 +35,31 @@ def criar_generos():
     return generos
 
 
-def criar_filmes(generos, quantidade=20):
-    """Cria filmes associando a um genero_id existente."""
-    filmes = [
-        FilmeFactory.criar_filme(
+def criar_filmes(generos, quantidade: int = 20):
+    """
+    Cria `quantidade` filmes aleatórios e vincula
+    corretamente cada filme ao gênero escolhido,
+    sem gerar SAWarning.
+    """
+    if not generos:
+        raise ValueError("Lista de gêneros está vazia.")
+
+    filmes = []
+    for _ in range(quantidade):
+        genero_escolhido = random.choice(generos)
+
+        filme = FilmeFactory.criar_filme(
             nome=fake.sentence(nb_words=3),
-            genero_id=random.choice(generos).id,
+            genero=genero_escolhido,          
             ano=random.randint(1950, 2024),
             sinopse=fake.text(max_nb_chars=150),
-            diretor=fake.name()
+            diretor=fake.name(),
         )
-        for _ in range(quantidade)
-    ]
-    db.session.add_all(filmes)
-    db.session.commit()
+
+        db.session.add(filme)                
+        filmes.append(filme)
+
+    db.session.commit()                      
     return filmes
 
 
