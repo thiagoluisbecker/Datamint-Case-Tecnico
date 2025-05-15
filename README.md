@@ -1,7 +1,7 @@
-# Datamint Case Tecnico
+# Datamint Case Técnico
 
 
-#  API de Locação de Filmes - Case Técnico FilmesTop.com
+#  API de Locação de Filmes - FilmesTop.com
 
 Este projeto é uma API RESTful desenvolvida em Flask que simula um sistema de locação de filmes, permitindo que usuários possam:
 1. Visualizar a lista de filmes disponíveis por gênero;
@@ -67,13 +67,12 @@ docker-compose exec app pytest
 
 ## Funcionalidades obrigatórias
 
-- GET    /filmes/genero/<genero_id> -> Lista filmes por gênero
-- GET    /filmes/<filme_id>               -> Detalhes de filme
-- POST   /alugueis/                       -> Alugar filme (requer X-User-Id)
+- GET    /filmes/genero/<genero_id> -> Lista filmes por gênero (login_required)
+- GET    /filmes/<filme_id>               -> Detalhes de filme (login_required)
+- POST   /alugueis/                       -> Alugar filme (login_required)
 - GET    /alugueis/meus-alugueis          -> Listar alugueis do usuário
 - POST   /alugueis/meus-alugueis/avaliar/<aluguel_id> -> Avaliar filme alugado
 
-**Usuário autenticado é simulado via header `X-User-Id`.**
 
 ---
 
@@ -146,8 +145,7 @@ docker-compose exec app pytest
   - Um-para-muitos com `Aluguel`
 
 - **Decisões:**
-  - Usuário “logado” simulado via header `X-User-Id`
-  - Permite múltiplos alugueis e avaliações
+    - Permite múltiplos alugueis e avaliações
 
 ---
 
