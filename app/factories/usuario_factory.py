@@ -1,4 +1,5 @@
 from app.models.usuario import Usuario
+from werkzeug.security import generate_password_hash
 
 class UsuarioFactory:
     
@@ -8,5 +9,5 @@ class UsuarioFactory:
             nome=nome,
             celular=celular,
             email=email,
-            senha = senha,
+            senha = generate_password_hash(senha),
         )

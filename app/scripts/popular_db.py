@@ -63,6 +63,7 @@ def criar_usuarios(quantidade=10):
         )
         for _ in range(quantidade)
     ]
+    
     db.session.add_all(usuarios)
     db.session.commit()
     return usuarios
@@ -97,6 +98,15 @@ def popular_db():
         filmes = criar_filmes(generos)
         usuarios = criar_usuarios()
         alugueis = criar_alugueis(usuarios, filmes)
+        
+        usuario_teste = UsuarioFactory.criar_usuario(
+            nome='Thiago Rocha',
+            celular=fake.phone_number(),
+            email='thiagobeckerrocha@gmail.com',
+            senha=f'teste_thiago'
+        )
+        db.session.add(usuario_teste)
+        db.session.commit()
         
 
 if __name__ == "__main__":

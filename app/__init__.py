@@ -44,7 +44,9 @@ def create_app(test_config=None):
     login_manager.login_view = "auth.login"
     Swagger(app)
 
-    # ---------- Blueprints ----------
+    # ---------- Modelos e blueprints ----------
+  
+    from app.models import usuario, filme, genero, aluguel
     from app.controllers.filme_controller   import filme_bp
     from app.controllers.aluguel_controller import aluguel_bp
     from app.controllers.auth_controller    import auth_bp

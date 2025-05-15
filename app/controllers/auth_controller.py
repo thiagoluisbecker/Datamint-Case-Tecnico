@@ -80,10 +80,10 @@ def login():
           properties:
             email:
               type: string
-              example: joao@email.com
+              example: thiagobeckerrocha@gmail.com
             senha:
               type: string
-              example: 1234
+              example: teste_thiago
     responses:
       200:
         description: Login bem-sucedido (cookie de sessão gravado)
@@ -102,7 +102,8 @@ def login():
     data = request.get_json()
     email = data.get("email")
     senha = data.get("senha")
-
+    print(email)
+    print(senha)
     usuario = Usuario.query.filter_by(email=email).first()
     if not usuario or not check_password_hash(usuario.senha, senha):
         abort(401, "Credenciais inválidas")
