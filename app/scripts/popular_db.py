@@ -112,7 +112,10 @@ def popular_db():
             email='thiagobeckerrocha2@gmail.com',
             senha=f'teste_thiago2'
         )
-        db.session.add_all(usuario_teste)
+        usuarios_especiais.append(usuario_teste)
+        usuarios_especiais.append(usuario_teste2)
+        
+        db.session.add_all(usuarios_especiais)
         db.session.commit()
         
 
