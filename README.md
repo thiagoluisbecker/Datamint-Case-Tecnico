@@ -170,7 +170,8 @@ docker-compose exec app pytest
   - Avaliação só pode ser feita se o usuário alugou o filme
   - Cada aluguel só recebe uma única avaliação. Entretanto, da forma que foi implementado, um usuário pode alugar um mesmo filme diversas vezes e atribuir diferentes notas a um mesmo filme que ele alugou.
 
-### Observações
-  - A API simula que o usuário já autenticado nas rotas '/alugueis'. Já para '/filmes', o acesso pode ser feito por qualquer usuário.  
-  - Para qualquer rota sob o grupo /alugueis (alugar filme, listar/meus-alugueis, avaliar), você deve incluir no header HTTP:
-  - `X-User-Id: <id_do_usuario>` (No Swagger aparece o campo para inserir o id do usuário)
+### Observações 
+  - Para acessar as rotas de alugueis/, o usuario precisa estar logado. A conta de acesso que está no placeholder da rota de login no swagger (thiagobeckerrocha@gmail.com) já está configurada para dar 'execute' e logar esse usuário na API
+  - Antes do merge com a branch Auth, a api precisava de um X-user-id para simular um usuario autenticado.
+  - Para mexer nas rotas sobre filmes/, o usuario nao precisa estar logado.
+  
