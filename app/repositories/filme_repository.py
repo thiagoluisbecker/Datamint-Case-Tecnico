@@ -1,5 +1,5 @@
 from app.models.filme import Filme
-from app import db
+from app.extensions import db
 
 class FilmeRepository:
 

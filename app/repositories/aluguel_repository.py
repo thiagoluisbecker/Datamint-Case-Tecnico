@@ -1,5 +1,5 @@
 from app.models.aluguel import Aluguel
-from app import db
+from app.extensions import db
 
 class AluguelRepository:
     

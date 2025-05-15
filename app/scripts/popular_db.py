@@ -1,4 +1,5 @@
-from app import create_app, db
+from app import create_app
+from app.extensions import db
 from app.models.aluguel import Aluguel
 from app.repositories.filme_repository import FilmeRepository
 from app.repositories.usuario_repository import UsuarioRepository
@@ -57,7 +58,8 @@ def criar_usuarios(quantidade=10):
         UsuarioFactory.criar_usuario(
             nome=fake.name(),
             celular=fake.phone_number(),
-            email=fake.unique.email()
+            email=fake.unique.email(),
+            senha=f'teste{_}'
         )
         for _ in range(quantidade)
     ]

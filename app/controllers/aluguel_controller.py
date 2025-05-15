@@ -3,13 +3,13 @@ from app.repositories.aluguel_repository import AluguelRepository
 from app.repositories.usuario_repository import UsuarioRepository
 from app.repositories.filme_repository import FilmeRepository
 from app.factories.aluguel_factory import AluguelFactory
-from app.models.aluguel import Aluguel
-from app import db
-
+from flask_login import login_required, current_user
+from app.extensions import db
 
 aluguel_bp = Blueprint('aluguel', __name__)
 
 @aluguel_bp.route('/', methods=['POST']) 
+@login_required
 def alugar_filme():
     """
     Usuário aluga um filme
@@ -40,7 +40,8 @@ def alugar_filme():
     filme_id = dados.get('filme_id')
 
     
-    usuario_id = request.headers.get('X-User-Id', type=int)
+    #usuario_id = request.headers.get('X-User-Id', type=int)
+    usuario_id = current_user.id
     if not usuario_id or not filme_id:
         abort(400, description="É necessário informar filme_id e estar autenticado via X-User-Id")
 
@@ -60,6 +61,7 @@ def alugar_filme():
 
 
 @aluguel_bp.route('/meus-alugueis/avaliar/<int:aluguel_id>', methods=['POST']) # id do filme, pq ja tenho id do usuario
+@login_required
 def avaliar_filme_alugado(aluguel_id):
     """
     Avalia filme alugado por um usuário
@@ -97,8 +99,8 @@ def avaliar_filme_alugado(aluguel_id):
     dados = request.get_json()
     nota = dados.get('nota')
 
-    usuario_id = request.headers.get('X-User-Id', type=int)
-
+    #usuario_id = request.headers.get('X-User-Id', type=int)
+    usuario_id = current_user.id
     if nota is None or nota < 0 or nota > 10:
         abort(400, description="Nota inválida. Deve ser entre 0 e 10.")
 
@@ -125,6 +127,7 @@ def avaliar_filme_alugado(aluguel_id):
 
 
 @aluguel_bp.route('/meus-alugueis', methods=['GET'])
+@login_required
 def lista_alugueis_usuario():
     """
     Lista filmes alugados do usuário
@@ -144,7 +147,8 @@ def lista_alugueis_usuario():
         description: Usuário não encontrado
     """
     
-    usuario_id = request.headers.get('X-User-Id', type=int)
+    #usuario_id = request.headers.get('X-User-Id', type=int)
+    usuario_id = current_user.id
     if not usuario_id:
         abort(400, description="O usuário deve estar autenticado via X-User-Id")
 
