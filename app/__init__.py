@@ -4,8 +4,8 @@ from flask_migrate import Migrate
 from flasgger import Swagger
 from flask_caching import Cache
 
-from .extensions import db, login_manager          # único login_manager
-from app.models.usuario import Usuario             # importa modelo aqui
+from .extensions import db, login_manager         
+from app.models.usuario import Usuario             
 
 migrate = Migrate()
 cache   = Cache()

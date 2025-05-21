@@ -10,7 +10,6 @@ def login(client, email, senha):
 
 
 #--- TEstes alugar_filme ---
-
 def test_alugar_filme(client, app):
     with app.app_context():
         genero  = GeneroFactory.criar_genero("Ação")
@@ -41,9 +40,9 @@ def test_alugar_filme_usuario_inexistente(client, app):
         filme  = FilmeFactory.criar_filme("Matrix", genero=genero, ano=1999)
         db.session.add_all([genero, filme]); db.session.commit()
 
-
         resp = client.post("/alugueis/", json={"filme_id": filme.id})
         assert resp.status_code == 401
+
 
 def test_alugar_filme_filme_inexistente(client, app):
     with app.app_context():
@@ -184,7 +183,7 @@ def test_listar_meus_alugueis(client, app):
             nome="Thiago",
             email="thiago@teste.com",
             celular="11111111111",
-            senha="teste"                     # texto → factory grava hash
+            senha="teste"                    
         )
         filme = FilmeFactory.criar_filme(
             "Matrix",
